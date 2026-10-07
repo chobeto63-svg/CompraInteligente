@@ -28,11 +28,6 @@ body{font-family:Arial,sans-serif;background:#f5f5f5}
 .bienvenida-box{background:#F0F4FF;border-left:4px solid #00113D;border-radius:8px;padding:12px 14px;margin:15px 0;font-size:13px;color:#2A2A2A;line-height:1.5}
 .bienvenida-box strong{color:#00113D}
 .nota-catalogo{text-align:center;font-size:12px;color:#FF6B00;margin-bottom:6px;font-style:italic}
-.cercanas-box{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:10px 12px;margin:8px 0 12px}
-.cercanas-titulo{font-size:13px;font-weight:bold;color:#00113D;margin-bottom:8px;text-align:center}
-.cercanas-botones{display:flex;gap:8px}
-.cercanas-btn{flex:1;text-align:center;background:#00113D;color:#fff;padding:9px 6px;border-radius:8px;font-size:12px;font-weight:bold;text-decoration:none}
-.cercanas-btn:active{opacity:0.8}
 .nota-sucursal{text-align:center;font-size:11px;color:#aaa;margin-bottom:12px}
 .filtro-btn{padding:7px 14px;border-radius:20px;border:2px solid #FF6B00;background:white;color:#FF6B00;font-size:13px;font-weight:bold;cursor:pointer;transition:all .2s}
 .filtro-btn.activo{background:#FF6B00;color:white}
@@ -181,15 +176,6 @@ body{font-family:Arial,sans-serif;background:#f5f5f5}
 
   <div class="nota-catalogo no-print">Prototipo de demostracion — catalogo de muestra recopilado manualmente</div>
 
-  <!-- Ferreterias mas cercanas (abre Google Maps, que pide el permiso de ubicacion) -->
-  <div class="cercanas-box no-print">
-    <div class="cercanas-titulo">📍 Ferreterías más cercanas</div>
-    <div class="cercanas-botones">
-      <a class="cercanas-btn" href="https://www.google.com/maps/search/?api=1&query=Freund+ferreteria" target="_blank">Freund cerca de mí</a>
-      <a class="cercanas-btn" href="https://www.google.com/maps/search/?api=1&query=Vidri+ferreteria" target="_blank">Vidri cerca de mí</a>
-    </div>
-  </div>
-
   <!-- Filtros -->
   <div class="filtros no-print" id="filtros">
     <button class="filtro-btn activo" onclick="setCat('CONSTRUCCION')">Construccion</button>
@@ -230,6 +216,7 @@ body{font-family:Arial,sans-serif;background:#f5f5f5}
 
     <button class="btn-gris no-print" onclick="guardarCotizacion()" style="margin-top:10px">Guardar cotizacion</button>
     <button class="btn-verde no-print" onclick="enviarWhatsApp()">Compartir por WhatsApp</button>
+    <button class="btn-naranja no-print" onclick="enviarAlCotizador()" style="margin-top:8px">Armar cotizacion para mi cliente</button>
 
     <!-- Botones Vista previa y Limpiar en la misma fila -->
     <div class="btn-row no-print">
@@ -296,7 +283,7 @@ var P = [
   { n: "CABLE THHN 12 BLANCO 100 m", c: "ELECTRICO", m: "ENERWIRE", img: "https://redmilh.com/8156-thickbox_default/cable-electrico-cobre-thhn-12-awg-blanco-500ft.jpg", t: "Freund", precio: 70.0 },
   { n: "TOMA HEMBRA MULTIUSO 6 SALIDAS 15 A 125 V 1 875 W", c: "ELECTRICO", m: "EAGLE", img: "https://www.eagle.cr/wp-content/uploads/1134-1.jpg", t: "Freund", precio: 7.75 },
   { n: "EXTENSION ELECTRICA 15.24 m (50 ft) TSJ 3 x 16 AWG", c: "ELECTRICO", m: "MASTER", img: "https://www.eagle.cr/wp-content/uploads/214-25-nueva.jpg", t: "Freund", precio: 26.0 },
-  { n: "GRAPA CONDUIT TUBERIA 19 mm (3/4 in)", c: "ELECTRICO", m: "APC", img: "IMAGENES/GRAPA CONDUIT 2.jpg", t: "Freund", precio: 0.3 },
+  { n: "GRAPA CONDUIT TUBERIA RIGIDA 19 mm (3/4 in)", c: "ELECTRICO", m: "APC", img: "https://fscompras.com/wp-content/uploads/2022/03/Grapa.jpg", t: "Freund", precio: 0.3 },
   { n: "CONECTOR MACHO TECNO-DUCTO 19 mm (3/4 in)", c: "ELECTRICO", m: "AMANCO", img: "https://www.ellagar.com/SERV_ADMIN_FILES/Archivos/Imagenes/Articulos_MED/7121063--16520_MED.png", t: "Freund", precio: 0.99 },
   { n: "CONECTOR RECTO PARA CORAZA GALVANIZADO 31.8 mm (1 1/4 in)", c: "ELECTRICO", m: "ARGOS", img: "https://argoselectrica.com/wp-content/uploads/2019/10/Conectores-rectos-para-tubo-metalico-flexible-300x300.png", t: "Freund", precio: 1.65 },
   { n: "CURVA DRENAJE PVC 76.2 mm (3 in) 90°", c: "FONTANERIA", m: "DURMAN", img: "https://m.media-amazon.com/images/I/71B0FCzbDfL._AC_UF894,1000_QL80_.jpg", t: "Freund", precio: 1.68 },
@@ -329,7 +316,7 @@ var P = [
   { n: "TENAZA AJUSTE RAPIDO 20.32 cm (8 in) EXTENSIBLE", c: "HERRAMIENTAS", m: "INGCO", img: "IMAGENES/TENAZA INGCO.jpg", t: "Freund", precio: 5.25 },
   { n: "SOLDADOR INVERSOR ELECTRICO MULTIFUNCION MMA/MIG 130 A", c: "HERRAMIENTAS", m: "INGCO", img: "https://www.ingco.com/userfiles/1/images/photo/20220511100000677/ING-MMA1302.jpg", t: "Freund", precio: 109.0 },
   { n: "SET BROCA METAL", c: "HERRAMIENTAS", m: "INGCO", img: "IMAGENES/BROCAS INGCO.jpg", t: "Freund", precio: 3.9 },
-  { n: "Cemento gris fuerte portland 42.5 kg HOLCIM", c: "CONSTRUCCION", m: "HOLCIM", img: "IMAGENES/Holcim Fuerte (2).jpg", t: "Vidri", precio: 9.85 },
+  { n: "Cemento gris fuerte portland 42.5 kg HOLCIM", c: "CONSTRUCCION", m: "HOLCIM", img: "IMAGENES/Holcim Fuerte.jpg", t: "Vidri", precio: 9.85 },
   { n: "Cemento gris uso general 42.5 kg FORTALEZA", c: "CONSTRUCCION", m: "FORTALEZA", img: "https://cementosfortaleza.com.sv/wp-content/uploads/2024/11/Uso-General-1024x1024.png", t: "Vidri", precio: 8.7 },
   { n: "HIERRO REDONDO CORRUGADO (3/8 in) 9.53 mm x 6 m GRADO 40 N° 3", c: "CONSTRUCCION", m: "CORINCA", img: "https://corinca.com/wp-content/uploads/2016/08/barras-de-acero-corrugado-bajo-norma-ASTM-A-615.jpg", t: "Vidri", precio: 3.58 },
   { n: "HIERRO REDONDO LISO 1/4 6.00 mm x 6 m", c: "CONSTRUCCION", m: "CORINCA", img: "https://corinca.com/wp-content/uploads/2023/03/varilla.jpg", t: "Vidri", precio: 1.39 },
@@ -345,7 +332,7 @@ var P = [
   { n: "CABLE THHN 12 BLANCO 100 m", c: "ELECTRICO", m: "SIN MARCA", img: "https://tornitec.com/wp-content/uploads/2023/05/CABLE252520NEGRO252520THHN_1a2a5923f0174fca8bb10b729d9f5507-1.jpg", t: "Vidri", precio: 3.95 },
   { n: "TOMA HEMBRA MULTIUSO 6 SALIDAS 15 A 125 V 1 875 W", c: "ELECTRICO", m: "SIN MARCA", img: "https://www.eagle.cr/wp-content/uploads/1135-W.jpg", t: "Vidri", precio: 6.95 },
   { n: "EXTENSION ELECTRICA 15.24 m (50 ft) TSJ 3 x 16 AWG", c: "ELECTRICO", m: "SIN MARCA", img: "https://ferreco.com/modules/hiblog/views/img/upload/original/50d995ea48f0af92f6a213f80716aa80.jpeg", t: "Vidri", precio: 11.5 },
-  { n: "GRAPA CONDUIT TUBERIA RIGIDA 19 mm (3/4 in)", c: "ELECTRICO", m: "SIN MARCA", img: "IMAGENES/GRAPA CONDUIT 1.jpg", t: "Vidri", precio: 0.65 },
+  { n: "GRAPA CONDUIT TUBERIA RIGIDA 19 mm (3/4 in)", c: "ELECTRICO", m: "SIN MARCA", img: "https://induma.com.co/app/uploads/2025/05/Grapa_tuberia.png", t: "Vidri", precio: 0.65 },
   { n: "CONECTOR MACHO TECNO-DUCTO 19 mm (3/4 in)", c: "ELECTRICO", m: "SIN MARCA", img: "https://argoselectrica.com/wp-content/uploads/2020/08/conector-gris.png", t: "Vidri", precio: 0.99 },
   { n: "CONECTOR RECTO PARA CORAZA GALVANIZADO 31.8 mm (1 1/4 in)", c: "ELECTRICO", m: "SIN MARCA", img: "https://origenlight.com.ec/wp-content/uploads/2026/01/261.png", t: "Vidri", precio: 1.26 },
   { n: "CURVA DRENAJE PVC 76.2 mm (3 in) 90°", c: "FONTANERIA", m: "SIN MARCA", img: "https://m.media-amazon.com/images/I/71B0FCzbDfL._AC_UF894,1000_QL80_.jpg", t: "Vidri", precio: 1.35 },
@@ -856,6 +843,34 @@ function enviarWhatsApp() {
   if (entrega) txt += "\n\nTiempo de entrega estimado: " + entrega;
   txt += "\n_Compra Inteligente_";
   window.open("https://wa.me/?text=" + encodeURIComponent(txt));
+}
+
+// ── ENVIAR AL COTIZADOR ──
+// Cambia esta direccion por la de tu cotizador publicado.
+var COTIZADOR_URL = "https://TU-USUARIO.github.io/Cotizador/cotizador.html";
+
+function enviarAlCotizador() {
+  if (COTIZADOR_URL.indexOf("TU-USUARIO") !== -1) {
+    mostrarToast("Falta configurar la direccion del cotizador");
+    return;
+  }
+  var items = cot.map(function(i) {
+    return { d: i.n, c: i.cantidad, p: i.precio, t: i.tienda };
+  });
+  var manoObra = parseFloat(document.getElementById("inp-mano-obra").value) || 0;
+  if (manoObra > 0) {
+    items.push({ d: "Mano de obra", u: "servicio", c: 1, p: manoObra, tipo: "mano" });
+  }
+  var datos = {
+    v: 1,
+    items: items,
+    cliente: { nombre: document.getElementById("inp-cliente").value || "", obra: document.getElementById("inp-obra").value || "" }
+  };
+  var bytes = new TextEncoder().encode(JSON.stringify(datos));
+  var bin = "";
+  bytes.forEach(function(b) { bin += String.fromCharCode(b); });
+  var b64 = btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  window.open(COTIZADOR_URL + "#import=" + b64, "_blank");
 }
 
 // ── PLANES ──
