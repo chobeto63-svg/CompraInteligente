@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compra Inteligente</title>
+<meta name="theme-color" content="#00113D">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#f5f5f5}
+.header{background:#00113D;padding:20px;text-align:center;color:white}
+.header img{max-width:130px;height:auto;margin-bottom:8px}
+.logo-circulo{display:inline-block;background:white;border-radius:14px;padding:6px 10px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,0.25)}
+.logo-circulo img{display:block;max-width:175px;height:auto;margin-bottom:0}
+.header h1{font-size:26px}
+.header p{font-size:13px;margin-top:4px}
+.header .slogan{font-size:14px;font-weight:bold;margin-top:6px;color:#FFD166}
+.container{max-width:600px;margin:0 auto;padding:15px}
+
+/* ── Buscador ── */
+.buscador-box{position:relative;margin:15px 0 4px 0}
+.buscador{width:100%;padding:12px 40px 12px 12px;border-radius:10px;border:1px solid #ddd;font-size:16px;display:block}
+.btn-limpiar{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:#FF6B00;color:white;border:none;border-radius:6px;padding:5px 10px;font-size:12px;font-weight:bold;cursor:pointer;display:none}
+.nota-buscar{text-align:center;font-size:13px;color:#aaa;margin:0 0 10px 0}
+
+/* ── Filtros ── */
+.filtros{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px;justify-content:center}
+.bienvenida-box{background:#F0F4FF;border-left:4px solid #00113D;border-radius:8px;padding:12px 14px;margin:15px 0;font-size:13px;color:#2A2A2A;line-height:1.5}
+.bienvenida-box strong{color:#00113D}
+.nota-catalogo{text-align:center;font-size:12px;color:#FF6B00;margin-bottom:6px;font-style:italic}
+.nota-sucursal{text-align:center;font-size:11px;color:#aaa;margin-bottom:12px}
+.filtro-btn{padding:7px 14px;border-radius:20px;border:2px solid #FF6B00;background:white;color:#FF6B00;font-size:13px;font-weight:bold;cursor:pointer;transition:all .2s}
+.filtro-btn.activo{background:#FF6B00;color:white}
+.filtro-btn:hover{background:#FF6B00;color:white}
+.tiendas-filtro{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 2px;justify-content:center}
+.tienda-filtro-btn{padding:6px 14px;border-radius:20px;border:2px solid;background:white;font-size:12px;font-weight:bold;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.5px;opacity:.45}
+.tienda-filtro-btn.activo{opacity:1;color:white}
+.tienda-filtro-Freund{border-color:#23AEEC;color:#23AEEC}
+.tienda-filtro-Freund.activo{background:#23AEEC}
+.tienda-filtro-Vidri{border-color:#EE2930;color:#EE2930}
+.tienda-filtro-Vidri.activo{background:#EE2930}
+.tienda-filtro-EPA{border-color:#FFC90E;color:#8a6a00}
+.tienda-filtro-EPA.activo{background:#FFC90E;color:#1a1a1a}
+.tienda-filtro-Lemus{border-color:#6A3D9A;color:#6A3D9A}
+.tienda-filtro-Lemus.activo{background:#6A3D9A}
+
+/* ── Badge categoría ── */
+.cat-badge{display:inline-block;font-size:10px;font-weight:bold;padding:2px 8px;border-radius:12px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.cat-CONSTRUCCION{background:#FFF3E0;color:#E65100}
+.cat-FONTANERIA{background:#E3F2FD;color:#1565C0}
+.cat-ELECTRICO{background:#FFF9C4;color:#F57F17}
+.cat-HERRAMIENTAS{background:#F3E5F5;color:#6A1B9A}
+.cat-PINTURAS{background:#FCE4EC;color:#AD1457}
+.cat-GENERAL{background:#F5F5F5;color:#555}
+.prod-imagen{float:right;width:70px;height:70px;object-fit:contain;margin-left:10px;border-radius:8px;background:#fafafa;padding:4px;border:1px solid #eee}
+.marca-badge{background:#FFF9C4;color:#7A6A00;padding:2px 8px;border-radius:6px;font-size:12px;font-weight:600;vertical-align:middle}
+
+.card{background:white;border-radius:12px;padding:15px;margin-bottom:15px;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+.prod-nombre{font-size:17px;font-weight:bold;margin-bottom:10px;color:#333}
+.precios{margin-bottom:10px}
+.pbox{background:#f0f0f0;padding:10px;border-radius:8px;text-align:center}
+.pbox.mejor{background:#e8f5e9;border:2px solid #4CAF50}
+.tienda{font-size:11px;color:#666}
+.valor{font-size:15px;font-weight:bold}
+.etiqueta{font-size:11px;color:#4CAF50}
+.nodisponible{font-size:12px;color:#999;font-style:italic}
+.tienda-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:bold;padding:2px 10px 2px 2px;border-radius:12px;margin-bottom:8px;margin-left:6px;text-transform:uppercase;letter-spacing:.5px;color:white;vertical-align:middle}
+.tienda-icono{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,0.9);color:inherit;font-size:10px;font-weight:900;text-transform:uppercase}
+.tienda-Freund{background:#23AEEC}
+.tienda-Freund .tienda-icono{color:#23AEEC}
+.tienda-Vidri{background:#EE2930}
+.tienda-Vidri .tienda-icono{color:#EE2930}
+.tienda-EPA{background:#FFC90E;color:#1a1a1a}
+.tienda-EPA .tienda-icono{color:#FFC90E}
+.tienda-Lemus{background:#6A3D9A}
+.tienda-Lemus .tienda-icono{color:#6A3D9A}
+.cantidad-box{display:flex;align-items:center;justify-content:center;gap:10px;margin:8px 0}
+.cantidad-box button{background:#FF6B00;color:white;border:none;width:30px;height:30px;border-radius:50%;font-size:18px;cursor:pointer;font-weight:bold}
+.btn-naranja{width:100%;background:#FF6B00;color:white;border:none;padding:11px;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer;margin-top:5px}
+.btn-verde{width:100%;background:#25D366;color:white;border:none;padding:11px;border-radius:8px;font-size:15px;cursor:pointer;margin-top:8px}
+.btn-gris{width:100%;background:#444;color:white;border:none;padding:11px;border-radius:8px;font-size:15px;cursor:pointer;margin-top:8px}
+.btn-rojo{width:100%;background:#e53935;color:white;border:none;padding:8px;border-radius:8px;font-size:13px;cursor:pointer;margin-top:5px}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.btn-row .btn-gris{margin-top:0}
+.btn-row .btn-rojo{margin-top:0;padding:11px}
+.form-input{width:100%;padding:10px;margin-bottom:8px;border-radius:8px;border:1px solid #ddd;font-size:14px;display:block}
+.form-input-opcional{width:100%;padding:10px;margin-bottom:8px;border-radius:8px;border:1px dashed #ddd;font-size:14px;display:block;background:#fafafa}
+.info-buscar{text-align:center;color:#999;padding:20px;font-size:14px}
+.cot-header{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 30px;gap:5px;padding:8px 5px;background:#FF6B00;color:white;border-radius:8px;font-size:12px;font-weight:bold;margin-bottom:5px;text-align:center}
+.cot-item{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 30px;gap:5px;padding:8px 5px;border-bottom:1px solid #eee;font-size:12px;align-items:center;text-align:center}
+.cot-item:nth-child(even){background:#fafafa}
+.cot-nombre{text-align:left;font-weight:bold;color:#333}
+.cot-tienda{color:#666;font-size:11px}
+.cot-precio{color:#FF6B00;font-weight:bold}
+.cot-subtotal{color:#333;font-weight:bold}
+.cot-eliminar{background:none;border:none;color:#e53935;font-size:16px;cursor:pointer}
+.cot-total{text-align:right;font-size:16px;font-weight:bold;margin-top:10px;padding-top:8px;border-top:1px solid #eee;color:#333}
+.cot-gran-total{text-align:right;font-size:18px;font-weight:bold;margin-top:6px;padding-top:8px;border-top:2px solid #FF6B00;color:#FF6B00}
+.cot-nota-entrega{font-size:12px;color:#666;margin-top:8px;padding:8px;background:#f9f9f9;border-radius:8px;border-left:3px solid #FF6B00}
+
+/* ── Vista previa ── */
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;overflow-y:auto}
+.modal-box{background:white;margin:20px auto;max-width:560px;border-radius:12px;padding:20px}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.modal-header h3{color:#FF6B00;font-size:18px}
+.btn-cerrar-modal{background:none;border:none;font-size:22px;cursor:pointer;color:#999}
+.preview-empresa{font-size:13px;color:#555;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #eee}
+.preview-titulo{font-size:16px;font-weight:bold;color:#333;margin-bottom:8px}
+.preview-tabla{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:10px}
+.preview-tabla th{background:#FF6B00;color:white;padding:6px;text-align:left}
+.preview-tabla td{padding:5px 6px;border-bottom:1px solid #eee}
+.preview-tabla tr:nth-child(even) td{background:#fafafa}
+.preview-totales{text-align:right;font-size:13px;margin-top:8px}
+.preview-gran-total{font-size:16px;font-weight:bold;color:#FF6B00}
+.preview-nota{font-size:11px;color:#666;margin-top:8px;padding:6px;background:#f9f9f9;border-radius:6px}
+.btn-imprimir-modal{width:100%;background:#FF6B00;color:white;border:none;padding:12px;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer;margin-top:12px}
+.modal-imagen-box{position:relative;max-width:90%;max-height:90%;margin:40px auto;display:flex;align-items:center;justify-content:center}
+.modal-imagen-box img{max-width:100%;max-height:85vh;border-radius:12px;background:white;object-fit:contain}
+.btn-cerrar-imagen{position:absolute;top:-40px;right:0;color:white;background:rgba(0,0,0,0.4);border-radius:50%;width:34px;height:34px;font-size:18px}
+.prod-imagen{cursor:pointer}
+
+.plan{border:2px solid #ddd;border-radius:10px;padding:15px;margin-bottom:10px;text-align:center}
+.plan.pro{border-color:#FF6B00}
+.plan.emp{border-color:#333}
+.plan h3{font-size:17px}
+.plan-precio{font-size:22px;font-weight:bold;color:#FF6B00;margin:6px 0}
+.plan ul{text-align:left;margin:8px 0;font-size:13px;color:#555;list-style:none}
+.plan ul li{margin:4px 0;padding-left:5px}
+.plan ul li:before{content:"✅ "}
+.btn-plan{background:#FF6B00;color:white;border:none;padding:9px 18px;border-radius:8px;cursor:pointer;font-size:13px;margin-top:8px}
+.limite-aviso{background:#fff3e0;border:1px solid #FF6B00;border-radius:8px;padding:10px;text-align:center;font-size:13px;color:#e65100;margin-bottom:10px}
+.cot-guardada{background:#f5f5f5;border-radius:8px;padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.cot-guardada-nombre{font-weight:bold;font-size:14px}
+.cot-guardada-fecha{font-size:11px;color:#999}
+.btn-cargar{background:#FF6B00;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px}
+.btn-borrar-cot{background:#e53935;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;margin-left:5px}
+.anuncio-box{background:linear-gradient(135deg,#fff8f0,#fff3e0);border:1px solid #FFD180;border-radius:12px;padding:12px 15px;margin:8px 0 12px 0}
+.anuncio-contenido{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.anuncio-etiqueta{font-size:9px;background:#FF6B00;color:white;padding:2px 6px;border-radius:8px;text-transform:uppercase;font-weight:bold;white-space:nowrap}
+.anuncio-texto{font-size:12px;color:#555;flex:1;margin:0}
+.anuncio-btn{background:#FF6B00;color:white;border:none;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.ver-mas-btn{width:100%;background:white;color:#FF6B00;border:2px solid #FF6B00;padding:10px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;margin-top:5px}
+@media print{.no-print{display:none!important}.header{background:#00113D!important;-webkit-print-color-adjust:exact}}.btn-subir{position:fixed;bottom:20px;right:20px;width:48px;height:48px;border-radius:50%;background:#FF6B00;color:white;border:none;font-size:22px;box-shadow:0 3px 10px rgba(0,0,0,0.3);cursor:pointer;display:none;align-items:center;justify-content:center;z-index:999}
+.btn-subir.visible{display:flex}
+.nota-confidencial{background:#F0F0F0;color:#555;border:1px solid #DDD;border-radius:8px;padding:8px 12px;font-size:12px;margin-bottom:14px;line-height:1.4;text-transform:uppercase;letter-spacing:.4px;font-weight:600;text-align:center}
+.toast-aviso{position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);background:#00113D;color:white;padding:12px 20px;border-radius:30px;font-size:14px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,0.3);opacity:0;transition:all .3s ease;z-index:1200;max-width:85%;text-align:center}
+.toast-aviso.visible{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div class="header">
+    <h1>Compra Inteligente</h1>
+  <p class="slogan">Compara y decide mejor</p>
+  <p>Comparador de precios para contratistas, electricistas y plomeros</p>
+</div>
+<div class="container">
+  <div id="aviso-limite" class="limite-aviso" style="display:none"></div>
+
+  <div class="bienvenida-box no-print">
+    <strong>Bienvenidos.</strong> Este es un prototipo funcional construido para explorar una alianza con su ferreteria. El catalogo que ven aqui es una muestra recopilada manualmente para esta presentacion, no el catalogo completo.
+  </div>
+
+  <!-- Buscador con botón limpiar -->
+  <div class="buscador-box no-print">
+    <input class="buscador" type="text" placeholder="Buscar producto..." id="buscador" oninput="onBuscadorInput()">
+    <button class="btn-limpiar" id="btn-limpiar" onclick="limpiarBuscador()">LIMPIAR</button>
+  </div>
+  <div class="nota-buscar no-print" id="nota-buscar">Escribe el nombre del producto que buscas</div>
+
+  <!-- Filtro de tiendas -->
+  <div class="tiendas-filtro no-print" id="tiendas-filtro">
+    <button class="tienda-filtro-btn activo tienda-filtro-Freund" onclick="toggleTienda('Freund')">Freund</button>
+    <button class="tienda-filtro-btn activo tienda-filtro-Vidri" onclick="toggleTienda('Vidri')">Vidri</button>
+  </div>
+  <div class="nota-buscar no-print" style="margin-top:2px">Toca una tienda para quitarla o volverla a activar</div>
+
+  <div class="nota-catalogo no-print">Prototipo de demostracion — catalogo de muestra recopilado manualmente</div>
+
+  <!-- Filtros -->
+  <div class="filtros no-print" id="filtros">
+    <button class="filtro-btn activo" onclick="setCat('CONSTRUCCION')">Construccion</button>
+    <button class="filtro-btn" onclick="setCat('FONTANERIA')">Fontanería</button>
+    <button class="filtro-btn" onclick="setCat('ELECTRICO')">Eléctrico</button>
+    <button class="filtro-btn" onclick="setCat('HERRAMIENTAS')">Herramientas</button>
+    <button class="filtro-btn" onclick="setCat('PINTURAS')">Pinturas</button>
+  </div>
+
+  <div id="lista-productos"></div>
+
+  <!-- Cotización -->
+  <div class="card" id="seccion-cotizacion" style="display:none">
+    <h2 style="margin-bottom:12px">Mi Cotizacion</h2>
+    <div class="nota-confidencial">Cotizacion de referencia — para uso interno</div>
+    <input class="form-input no-print" id="inp-usuario" type="text" placeholder="Tu nombre">
+    <input class="form-input no-print" id="inp-cliente" type="text" placeholder="Nombre del cliente">
+    <input class="form-input no-print" id="inp-obra" type="text" placeholder="Nombre de la obra">
+    <input class="form-input no-print" id="inp-nombre-cot" type="text" placeholder="Nombre de esta cotizacion (para guardarla)">
+    <div class="cot-header">
+      <div>Producto</div><div>Ferreteria</div><div>P.Unit</div><div>Cantidad</div><div>Subtotal</div><div></div>
+    </div>
+    <div id="items-cotizacion"></div>
+    <div id="total-materiales" class="cot-total"></div>
+
+    <!-- Mano de obra (opcional) -->
+    <div class="no-print" style="margin-top:10px">
+      <input class="form-input-opcional" id="inp-mano-obra" type="number" min="0" step="0.01" placeholder="Mano de obra (opcional) $0.00" oninput="renderCot()">
+    </div>
+
+    <!-- Tiempo de entrega (opcional) -->
+    <div class="no-print" style="margin-top:0">
+      <input class="form-input-opcional" id="inp-entrega" type="text" placeholder="Tiempo de entrega estimado (opcional)">
+    </div>
+
+    <div id="gran-total" class="cot-gran-total" style="display:none"></div>
+    <div id="nota-entrega-cot" class="cot-nota-entrega" style="display:none"></div>
+
+    <button class="btn-gris no-print" onclick="guardarCotizacion()" style="margin-top:10px">Guardar cotizacion</button>
+    <button class="btn-verde no-print" onclick="enviarWhatsApp()">Compartir por WhatsApp</button>
+    <button class="btn-naranja no-print" onclick="enviarAlCotizador()" style="margin-top:8px">Armar cotizacion para mi cliente</button>
+
+    <!-- Botones Vista previa y Limpiar en la misma fila -->
+    <div class="btn-row no-print">
+      <button class="btn-gris" onclick="vistaPrevia()">Vista previa</button>
+      <button class="btn-rojo" onclick="limpiarCotizacion()">Limpiar cotizacion</button>
+    </div>
+  </div>
+
+  <!-- Modal Vista Previa -->
+  <div class="modal-overlay no-print" id="modal-preview">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Vista Previa</h3>
+        <button class="btn-cerrar-modal" onclick="cerrarPreview()">✕</button>
+      </div>
+      <div id="contenido-preview"></div>
+      <button class="btn-imprimir-modal" onclick="imprimirCotizacion()">Imprimir / Guardar PDF</button>
+    </div>
+  </div>
+
+  <!-- Modal Imagen Ampliada -->
+  <div class="modal-overlay no-print" id="modal-imagen" onclick="cerrarImagen()">
+    <div class="modal-imagen-box">
+      <button class="btn-cerrar-modal btn-cerrar-imagen" onclick="cerrarImagen()">✕</button>
+      <img id="img-ampliada" src="" alt="">
+    </div>
+  </div>
+
+  <div class="card no-print" id="seccion-guardadas" style="display:none">
+    <h2 style="margin-bottom:12px">Mis Cotizaciones Guardadas</h2>
+    <div id="lista-guardadas"></div>
+  </div>
+
+  <div class="card no-print" id="planes">
+    <h2 style="text-align:center;margin-bottom:12px">Compra Inteligente</h2>
+    <div class="plan">
+      <h3>Version de prueba</h3>
+      <ul>
+        <li>Cotizar hasta 10 productos por dia</li>
+        <li>Crear 1 cotizacion</li>
+        <li>Compartir por WhatsApp</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── PRODUCTOS ── (actualizar.py reemplaza este bloque)
+var P = [
+  { n: "CEMENTO GRIS FORTALEZA TIPO GU 42.5 kg (93.5 lb)", c: "CONSTRUCCION", m: "FORTALEZA", img: "https://cementosfortaleza.com.sv/wp-content/uploads/2024/11/Uso-General-1024x1024.png", t: "Freund", precio: 8.7 },
+  { n: "CEMENTO PORTLAND FUERTE GRIS 42.5 kg (93.5 lb)", c: "CONSTRUCCION", m: "HOLCIM", img: "IMAGENES/Holcim Fuerte.jpg", t: "Freund", precio: 9.85 },
+  { n: "HIERRO REDONDO CORRUGADO (3/8 in) 9.53 mm x 6 m GRADO 40 N° 3", c: "CONSTRUCCION", m: "CORINCA", img: "https://corinca.com/wp-content/uploads/2016/08/barras-de-acero-corrugado-bajo-norma-ASTM-A-615.jpg", t: "Freund", precio: 3.58 },
+  { n: "HIERRO REDONDO LISO 1/4 6.00 mm x 6 m", c: "CONSTRUCCION", m: "CORINCA", img: "https://corinca.com/wp-content/uploads/2023/03/varilla.jpg", t: "Freund", precio: 1.39 },
+  { n: "ALAMBRE AMARRE CALIBRE 16 (1.50 mm)", c: "CONSTRUCCION", m: "CORINCA", img: "https://corinca.com/wp-content/uploads/2016/08/alambre-de-amarre-1.jpg", t: "Freund", precio: 0.69 },
+  { n: "ALAMBRE GALVANIZADO CALIBRE 10 (3.42 mm)", c: "CONSTRUCCION", m: "CORINCA", img: "https://corinca.com/wp-content/uploads/2016/08/Alambre-galvanizado.jpg", t: "Freund", precio: 0.95 },
+  { n: "ARENA RUSTICA EN BOLSA PRECIO PUESTO EN TIENDA", c: "CONSTRUCCION", m: "SIN MARCA", img: "https://www.loencuentras.com.co/2652-thickbox_default/arena-de-rio.jpg", t: "Freund", precio: 2.14 },
+  { n: "GRAVA #1 EN BOLSA PRECIO PUESTO EN TIENDA", c: "CONSTRUCCION", m: "SIN MARCA", img: "https://thumbs.dreamstime.com/b/grava-industrial-7075337.jpg", t: "Freund", precio: 2.6 },
+  { n: "BLOQUE ENTERO 10 cm x 20 cm x 40 cm", c: "CONSTRUCCION", m: "SALTEX", img: "https://gruposaltex.com.sv/wp-content/uploads/2025/11/imagens-productos-_ENTERO_NORMADO_15_.png", t: "Freund", precio: 0.76 },
+  { n: "BLOQUE ENTERO 15 cm x 20 cm x 40 cm", c: "CONSTRUCCION", m: "SALTEX", img: "https://gruposaltex.com.sv/wp-content/uploads/2025/11/imagens-productos-_ENTERO_NORMADO_15_.png", t: "Freund", precio: 0.75 },
+  { n: "TOMA DOBLE POLARIZADO SUPERFICIAL BLANCO 125 V 15 A", c: "ELECTRICO", m: "EAGLE", img: "https://www.eagle.cr/wp-content/uploads/77-W-200x181.jpg", t: "Freund", precio: 1.65 },
+  { n: "TOMA DOBLE POLARIZADO 125 V 15 A BLANCO", c: "ELECTRICO", m: "EAGLE", img: "https://www.eagle.cr/wp-content/uploads/270-e1474500487227.jpg", t: "Freund", precio: 0.8 },
+  { n: "SWITCH DOBLE CAMBIO MARFIL NOBILE", c: "ELECTRICO", m: "BTICINO", img: "https://cdn.celasa.com.gt/productos/MOS03.jpg", t: "Freund", precio: 7.5 },
+  { n: "CABLE TSJ 3 x 12 AWG CONEXION INDUSTRIAL NEGRO", c: "ELECTRICO", m: "PHELPS DODGE", img: "https://www.grupodebiase.com/14239-large_default/cables-cable-3x12-tsj-n-cu-iconel-rollo.jpg", t: "Freund", precio: 3.25 },
+  { n: "CABLE THHN 12 BLANCO 100 m", c: "ELECTRICO", m: "ENERWIRE", img: "https://redmilh.com/8156-thickbox_default/cable-electrico-cobre-thhn-12-awg-blanco-500ft.jpg", t: "Freund", precio: 70.0 },
+  { n: "TOMA HEMBRA MULTIUSO 6 SALIDAS 15 A 125 V 1 875 W", c: "ELECTRICO", m: "EAGLE", img: "https://www.eagle.cr/wp-content/uploads/1134-1.jpg", t: "Freund", precio: 7.75 },
+  { n: "EXTENSION ELECTRICA 15.24 m (50 ft) TSJ 3 x 16 AWG", c: "ELECTRICO", m: "MASTER", img: "https://www.eagle.cr/wp-content/uploads/214-25-nueva.jpg", t: "Freund", precio: 26.0 },
+  { n: "GRAPA CONDUIT TUBERIA RIGIDA 19 mm (3/4 in)", c: "ELECTRICO", m: "APC", img: "https://fscompras.com/wp-content/uploads/2022/03/Grapa.jpg", t: "Freund", precio: 0.3 },
+  { n: "CONECTOR MACHO TECNO-DUCTO 19 mm (3/4 in)", c: "ELECTRICO", m: "AMANCO", img: "https://www.ellagar.com/SERV_ADMIN_FILES/Archivos/Imagenes/Articulos_MED/7121063--16520_MED.png", t: "Freund", precio: 0.99 },
+  { n: "CONECTOR RECTO PARA CORAZA GALVANIZADO 31.8 mm (1 1/4 in)", c: "ELECTRICO", m: "ARGOS", img: "https://argoselectrica.com/wp-content/uploads/2019/10/Conectores-rectos-para-tubo-metalico-flexible-300x300.png", t: "Freund", precio: 1.65 },
+  { n: "CURVA DRENAJE PVC 76.2 mm (3 in) 90°", c: "FONTANERIA", m: "DURMAN", img: "https://m.media-amazon.com/images/I/71B0FCzbDfL._AC_UF894,1000_QL80_.jpg", t: "Freund", precio: 1.68 },
+  { n: "YETE DRENAJE PVC LISA 101.6 mm (4 in)", c: "FONTANERIA", m: "DURMAN", img: "https://ferrebaratilloimage.s3.us-east-2.amazonaws.com/108126.png", t: "Freund", precio: 4.14 },
+  { n: "CODO PVC LISO 50.8 mm (2 in) 90°", c: "FONTANERIA", m: "DURMAN", img: "https://ferrebaratilloimage.s3.us-east-2.amazonaws.com/102924.png", t: "Freund", precio: 1.41 },
+  { n: "ADAPTADOR MACHO PVC 12.7 mm (1/2 in)", c: "FONTANERIA", m: "DURMAN", img: "https://ferreteriadelhogar.com/wp-content/uploads/2024/05/PVC-611FC1.jpg", t: "Freund", precio: 0.23 },
+  { n: "TEE PVC LISA 12.7 mm (1/2 in)", c: "FONTANERIA", m: "DURMAN", img: "https://static.wixstatic.com/media/30a629_5cf8b763ce4f43ae807321ee03903947~mv2.png/v1/fill/w_364,h_364,al_c,lg_1,q_85,enc_avif,quality_auto/30a629_5cf8b763ce4f43ae807321ee03903947~mv2.png", t: "Freund", precio: 0.32 },
+  { n: "INODORO REDONDO 2 PIEZAS 4.8 L BLANCO CAMPEON AHORRO DE AGUA", c: "FONTANERIA", m: "EDESA", img: "https://www.ceramicasur.cl/wp-content/uploads/2023/11/TOILET-EDESA.jpg", t: "Freund", precio: 48.99 },
+  { n: "LAVABO CON PEDESTAL BLANCO CHELSEA SIN FONTANERIA", c: "FONTANERIA", m: "EDESA", img: "https://d2o812a6k13pkp.cloudfront.net/Productos/40450638_0220220411130658.jpg", t: "Freund", precio: 32.99 },
+  { n: "TUBO PVC CON CAMPANA 2 171.84 kPa (315 psi) 12.7 mm (1/2 in) x 6 m", c: "FONTANERIA", m: "DURMAN", img: "https://bricomark.mx/wp-content/uploads/2020/12/TUBO-PVC-H.jpg", t: "Freund", precio: 2.65 },
+  { n: "TUBO PVC CON CAMPANA 1 723.68 kPa (250 psi) 63.5 mm (2 1/2 in)", c: "FONTANERIA", m: "AMANCO", img: "https://distribuidorapvctoluca.com.mx/2023/wp-content/uploads/2026/05/TPSD004.png", t: "Freund", precio: 37.5 },
+  { n: "PEGAMENTO PVC 946.35 mL (1/4 gal) TRANSPARENTE", c: "FONTANERIA", m: "DURMAN", img: "https://durman.com/wp-content/uploads/2022/05/pegamento-wet-bonding-thumb.jpg", t: "Freund", precio: 21.9 },
+  { n: "PINTURA LATEX PARA USO EXTERIOR / INTERIOR EXCELLO LATEX MATE", c: "PINTURAS", m: "SHERWIN WILLIAMS", img: "https://media.doitcenter.com.pa/media/catalog/product/4/2/42850201_ltzcuzfwihrw7nur.jpg", t: "Freund", precio: 158.0 },
+  { n: "IMPERMEABILIZANTE Y TERMOREFLECTANTE PARA TECHOS LOSAS Y PAREDES AQUALOCK 8000", c: "PINTURAS", m: "SHERWIN WILLIAMS", img: "https://www.sherwinca.com/wp-content/uploads/2017/09/20240715-aqualock-8000-entintable.png", t: "Freund", precio: 11.9 },
+  { n: "PINTURA COLONIAL LATEX", c: "PINTURAS", m: "SHERWIN WILLIAMS", img: "https://cemacogtb2b.vtexassets.com/arquivos/ids/380714/260871_1.jpg?v=638493668584400000", t: "Freund", precio: 132.0 },
+  { n: "THINNER CORRIENTE TH3", c: "PINTURAS", m: "SHERWIN WILLIAMS", img: "https://pyrsa.mx/wp-content/uploads/2019/01/reductores-bis.jpg", t: "Freund", precio: 9.85 },
+  { n: "RODILLO 22.86 cm (9 in) + BANDEJA +", c: "PINTURAS", m: "SHERWIN WILLIAMS", img: "https://materiales-express.com/wp-content/uploads/2021/02/Rodillo-Con-Bandeja-DE-10-PULGADAS.jpg", t: "Freund", precio: 6.99 },
+  { n: "RODILLO PROFESIONAL DE MICROFIBRA 23 cm x 10 mm", c: "PINTURAS", m: "SIN MARCA", img: "https://www.diprofer.com/catalogo/3824-large_default/repuesto-rodillo-mini-pintar-esponja.jpg", t: "Freund", precio: 6.99 },
+  { n: "BROCHA ESTANDAR DE CERDA NATURAL 7.62 cm (3 in) CON MANGO DE PLASTICO", c: "PINTURAS", m: "SIN MARCA", img: "https://www.grupoferreteroaguilar.com.mx/wp-content/uploads/2024/03/14486-456x456.jpg", t: "Freund", precio: 2.6 },
+  { n: "SELLADOR SUPER CONCENTRADO NITROCELULOSO PARA MADERA PARA USO INTERIOR TRANSPARENTE", c: "PINTURAS", m: "SHERWIN WILLIAMS", img: "https://www.sherwinca.com/wp-content/uploads/2017/10/swca-20240206-producto-Sellador-super-concentrado.png", t: "Freund", precio: 26.9 },
+  { n: "CINTA DOBLE ADHESIVA DE ESPUMA DE URETANO BLANCO 3.18 mm x 25.4 mm (1/8 in x 1 in) 4008", c: "PINTURAS", m: "3M", img: "https://www.vallen.com.mx/on/demandware.static/-/Sites-vallen-master-catalog/default/dwd82e9f83/images/large/3M-70006436177_500_1.jpg", t: "Freund", precio: 3.5 },
+  { n: "TIRRO INDUSTRIAL 50.8 mm x 41.15 m (2 in x 45 yd) BLUE BOLD", c: "PINTURAS", m: "SIN MARCA", img: "https://www.libreriacervantes.com.sv/wp-content/uploads/2024/03/3M-TIRRO-2x40-MTS.png", t: "Freund", precio: 3.35 },
+  { n: "TALADRO ROTATIVO INALAMBRICO 9.53 mm (3/8 in) 12 V 1.5 Ah", c: "HERRAMIENTAS", m: "INGCO", img: "IMAGENES/Taladro P20S.jpg", t: "Freund", precio: 24.9 },
+  { n: "SET HERRAMIENTAS MANUALES BASICAS", c: "HERRAMIENTAS", m: "INGCO", img: "https://www.ingco.com/userfiles/1/images/photo/20200730/HKTH10809.jpg", t: "Freund", precio: 10.5 },
+  { n: "CINTA METRICA 5 M X 19MM X 16 PIE CON GRIP", c: "HERRAMIENTAS", m: "INGCO", img: "IMAGENES/CNTA METRICA INGCO.jpg", t: "Freund", precio: 3.5 },
+  { n: "ESMERIL ANGULAR 228.6 mm (9 in) 2 400 W", c: "HERRAMIENTAS", m: "INGCO", img: "IMAGENES/ESMERIL ELECTRICO INGCO.jpg", t: "Freund", precio: 108.0 },
+  { n: "CAJA PARA HERRAMIENTA METAL PLEGABLE 404 mm x 200 mm x 205 mm", c: "HERRAMIENTAS", m: "INGCO", img: "IMAGENES/CAJA DE HERRAMIENTAS INGCO.jpg", t: "Freund", precio: 27.5 },
+  { n: "SIERRA CIRCULAR INALAMBRICA 165.1 mm (6 1/2 in) 20 V NO INCLUYE BATERIA NI CARGADOR", c: "HERRAMIENTAS", m: "INGCO", img: "IMAGENES/cierra circular ingco.jpg", t: "Freund", precio: 63.9 },
+  { n: "MARTILLO OREJA 567 g (20 oz) MANGO FIBRA DE VIDRIO", c: "HERRAMIENTAS", m: "INGCO", img: "IMAGENES/MARTILLO INGCO.jpg", t: "Freund", precio: 5.0 },
+  { n: "TENAZA AJUSTE RAPIDO 20.32 cm (8 in) EXTENSIBLE", c: "HERRAMIENTAS", m: "INGCO", img: "IMAGENES/TENAZA INGCO.jpg", t: "Freund", precio: 5.25 },
+  { n: "SOLDADOR INVERSOR ELECTRICO MULTIFUNCION MMA/MIG 130 A", c: "HERRAMIENTAS", m: "INGCO", img: "https://www.ingco.com/userfiles/1/images/photo/20220511100000677/ING-MMA1302.jpg", t: "Freund", precio: 109.0 },
+  { n: "SET BROCA METAL", c: "HERRAMIENTAS", m: "INGCO", img: "IMAGENES/BROCAS INGCO.jpg", t: "Freund", precio: 3.9 },
+  { n: "Cemento gris fuerte portland 42.5 kg HOLCIM", c: "CONSTRUCCION", m: "HOLCIM", img: "IMAGENES/Holcim Fuerte.jpg", t: "Vidri", precio: 9.85 },
+  { n: "Cemento gris uso general 42.5 kg FORTALEZA", c: "CONSTRUCCION", m: "FORTALEZA", img: "https://cementosfortaleza.com.sv/wp-content/uploads/2024/11/Uso-General-1024x1024.png", t: "Vidri", precio: 8.7 },
+  { n: "HIERRO REDONDO CORRUGADO (3/8 in) 9.53 mm x 6 m GRADO 40 N° 3", c: "CONSTRUCCION", m: "CORINCA", img: "https://corinca.com/wp-content/uploads/2016/08/barras-de-acero-corrugado-bajo-norma-ASTM-A-615.jpg", t: "Vidri", precio: 3.58 },
+  { n: "HIERRO REDONDO LISO 1/4 6.00 mm x 6 m", c: "CONSTRUCCION", m: "CORINCA", img: "https://corinca.com/wp-content/uploads/2023/03/varilla.jpg", t: "Vidri", precio: 1.39 },
+  { n: "ALAMBRE AMARRE CALIBRE 16 (1.50 mm)", c: "CONSTRUCCION", m: "CORINCA", img: "https://corinca.com/wp-content/uploads/2016/08/alambre-de-amarre-1.jpg", t: "Vidri", precio: 0.69 },
+  { n: "ALAMBRE GALVANIZADO CALIBRE 10 (3.42 mm)", c: "CONSTRUCCION", m: "CORINCA", img: "https://corinca.com/wp-content/uploads/2016/08/Alambre-galvanizado.jpg", t: "Vidri", precio: 0.95 },
+  { n: "ARENA RUSTICA EN BOLSA PRECIO PUESTO EN TIENDA", c: "CONSTRUCCION", m: "SIN MARCA", img: "https://materialesestrada.com/assets/uploads/c4e04fc868fb0ebd2c74963872d459fb.jpg", t: "Vidri", precio: 3.5 },
+  { n: "GRAVA #1 EN BOLSA PRECIO PUESTO EN TIENDA", c: "CONSTRUCCION", m: "SIN MARCA", img: "https://www.surtidor.com/2199904-large_default/cemento-boquilla-soldadura-refac-wc-etc-cementos-aceros-lerma-11005033350.jpg", t: "Vidri", precio: 4.1 },
+  { n: "Ladrillo refractario rectangular 9x4.1/2x2.1/2 pulg", c: "CONSTRUCCION", m: "SIN MARCA", img: "https://www.cemix.com/wp-content/uploads/2023/11/adhesivo-ladrillo-refractario.jpg", t: "Vidri", precio: 8.5 },
+  { n: "TOMA DOBLE POLARIZADO SUPERFICIAL BLANCO 125 V 15 A", c: "ELECTRICO", m: "EAGLE", img: "https://www.eagle.cr/wp-content/uploads/77-W-200x181.jpg", t: "Vidri", precio: 1.6 },
+  { n: "TOMA DOBLE POLARIZADO 125 V 15 A BLANCO", c: "ELECTRICO", m: "EAGLE", img: "https://www.eagle.cr/wp-content/uploads/270-e1474500487227-200x200.jpg", t: "Vidri", precio: 2.1 },
+  { n: "SWITCH DOBLE CAMBIO MARFIL NOBILE", c: "ELECTRICO", m: "EAGLE", img: "https://www.eagle.cr/wp-content/uploads/1004W-200x200.jpg", t: "Vidri", precio: 1.95 },
+  { n: "CABLE TSJ 3 x 12 AWG CONEXION INDUSTRIAL NEGRO", c: "ELECTRICO", m: "VIAKON", img: "https://www.grupodebiase.com/14239-large_default/cables-cable-3x12-tsj-n-cu-iconel-rollo.jpg", t: "Vidri", precio: 3.15 },
+  { n: "CABLE THHN 12 BLANCO 100 m", c: "ELECTRICO", m: "SIN MARCA", img: "https://tornitec.com/wp-content/uploads/2023/05/CABLE252520NEGRO252520THHN_1a2a5923f0174fca8bb10b729d9f5507-1.jpg", t: "Vidri", precio: 3.95 },
+  { n: "TOMA HEMBRA MULTIUSO 6 SALIDAS 15 A 125 V 1 875 W", c: "ELECTRICO", m: "SIN MARCA", img: "https://www.eagle.cr/wp-content/uploads/1135-W.jpg", t: "Vidri", precio: 6.95 },
+  { n: "EXTENSION ELECTRICA 15.24 m (50 ft) TSJ 3 x 16 AWG", c: "ELECTRICO", m: "SIN MARCA", img: "https://ferreco.com/modules/hiblog/views/img/upload/original/50d995ea48f0af92f6a213f80716aa80.jpeg", t: "Vidri", precio: 11.5 },
+  { n: "GRAPA CONDUIT TUBERIA RIGIDA 19 mm (3/4 in)", c: "ELECTRICO", m: "SIN MARCA", img: "https://induma.com.co/app/uploads/2025/05/Grapa_tuberia.png", t: "Vidri", precio: 0.65 },
+  { n: "CONECTOR MACHO TECNO-DUCTO 19 mm (3/4 in)", c: "ELECTRICO", m: "SIN MARCA", img: "https://argoselectrica.com/wp-content/uploads/2020/08/conector-gris.png", t: "Vidri", precio: 0.99 },
+  { n: "CONECTOR RECTO PARA CORAZA GALVANIZADO 31.8 mm (1 1/4 in)", c: "ELECTRICO", m: "SIN MARCA", img: "https://origenlight.com.ec/wp-content/uploads/2026/01/261.png", t: "Vidri", precio: 1.26 },
+  { n: "CURVA DRENAJE PVC 76.2 mm (3 in) 90°", c: "FONTANERIA", m: "SIN MARCA", img: "https://m.media-amazon.com/images/I/71B0FCzbDfL._AC_UF894,1000_QL80_.jpg", t: "Vidri", precio: 1.35 },
+  { n: "YETE DRENAJE PVC LISA 101.6 mm (4 in)", c: "FONTANERIA", m: "SIN MARCA", img: "https://ferrebaratilloimage.s3.us-east-2.amazonaws.com/108126.png", t: "Vidri", precio: 3.8 },
+  { n: "CODO PVC LISO 50.8 mm (2 in) 90°", c: "FONTANERIA", m: "SIN MARCA", img: "https://www.lewonski.com/sites/default/files/productos_ws/0900036-01.jpg", t: "Vidri", precio: 4.1 },
+  { n: "ADAPTADOR MACHO PVC 12.7 mm (1/2 in)", c: "FONTANERIA", m: "SIN MARCA", img: "https://cdn.croper.com/images/kk3c-kjt9xu2r-28ag-0x/original.jpeg", t: "Vidri", precio: 1.3 },
+  { n: "TEE PVC LISA 12.7 mm (1/2 in)", c: "FONTANERIA", m: "SIN MARCA", img: "IMAGENES/TEE PVC LISA .jpg", t: "Vidri", precio: 1.95 },
+  { n: "INODORO REDONDO 2 PIEZAS 4.8 L BLANCO CAMPEON AHORRO DE AGUA", c: "FONTANERIA", m: "SIN MARCA", img: "https://www.fanaloza.cl/wp-content/uploads/2015/09/Inodoro-Verona.jpg", t: "Vidri", precio: 57.9 },
+  { n: "LAVABO CON PEDESTAL BLANCO CHELSEA SIN FONTANERIA", c: "FONTANERIA", m: "SIN MARCA", img: "https://fvandina.com/wp-content/uploads/2026/03/e227blxl-XL.jpg", t: "Vidri", precio: 58.9 },
+  { n: "TUBO PVC CON CAMPANA 2 171.84 kPa (315 psi) 12.7 mm (1/2 in) x 6 m", c: "FONTANERIA", m: "SIN MARCA", img: "https://didelcoenlinea.com/wp-content/uploads/2023/11/370000007.jpg", t: "Vidri", precio: 2.6 },
+  { n: "TUBO PVC CON CAMPANA 1 723.68 kPa (250 psi) 63.5 mm (2 1/2 in)", c: "FONTANERIA", m: "SIN MARCA", img: "https://media.larachycia.com/800x800/media/items/09320026.webp", t: "Vidri", precio: 22.5 },
+  { n: "PEGAMENTO PVC 946.35 mL (1/4 gal) TRANSPARENTE", c: "FONTANERIA", m: "SIN MARCA", img: "https://media.larachycia.com/800x800/media/items/04320000.webp", t: "Vidri", precio: 4.5 },
+  { n: "PINTURA LATEX PARA USO EXTERIOR / INTERIOR EXCELLO LATEX MATE", c: "PINTURAS", m: "SIN MARCA", img: "IMAGENES/PINTURA LATEX GLIDDEN CUBETA.jpg", t: "Vidri", precio: 145.0 },
+  { n: "IMPERMEABILIZANTE Y TERMOREFLECTANTE PARA TECHOS LOSAS Y PAREDES AQUALOCK 8000", c: "PINTURAS", m: "SIN MARCA", img: "IMAGENES/GLIDDEN PERMEABILIZANTE .jpg", t: "Vidri", precio: 35.25 },
+  { n: "PINTURA  LATEX", c: "PINTURAS", m: "SIN MARCA", img: "IMAGENES/PINTUTA PARA INTERIOR.jpg", t: "Vidri", precio: 13.5 },
+  { n: "THINNER CORRIENTE TH3", c: "PINTURAS", m: "SIN MARCA", img: "IMAGENES/THINNER.jpg", t: "Vidri", precio: 17.95 },
+  { n: "RODILLO 22.86 cm (9 in) + BANDEJA +", c: "PINTURAS", m: "SIN MARCA", img: "IMAGENES/RODILLO PARA PINTURA.jpg", t: "Vidri", precio: 1.15 },
+  { n: "RODILLO PROFESIONAL DE MICROFIBRA 23 cm x 10 mm", c: "PINTURAS", m: "SIN MARCA", img: "IMAGENES/RODILLO MICROFIBRA.jpg", t: "Vidri", precio: 3.5 },
+  { n: "BROCHA ESTANDAR DE CERDA NATURAL 7.62 cm (3 in) CON MANGO DE PLASTICO", c: "PINTURAS", m: "SIN MARCA", img: "https://m.media-amazon.com/images/I/61MYNPuVZXL.jpg", t: "Vidri", precio: 2.15 },
+  { n: "SELLADOR SUPER CONCENTRADO NITROCELULOSO PARA MADERA PARA USO INTERIOR TRANSPARENTE", c: "PINTURAS", m: "SIN MARCA", img: "https://www.toso.cl/wp-content/uploads/2024/05/sellador-dynal-pmadera-primera-14-gl.jpg", t: "Vidri", precio: 41.95 },
+  { n: "CINTA DOBLE ADHESIVA DE ESPUMA DE URETANO BLANCO 3.18 mm x 25.4 mm (1/8 in x 1 in) 4008", c: "PINTURAS", m: "SIN MARCA", img: "https://ferreteriacima.com.do/cdn/shop/products/013016.jpg?v=1618865486", t: "Vidri", precio: 3.5 },
+  { n: "TIRRO INDUSTRIAL 50.8 mm x 41.15 m (2 in x 45 yd) BLUE BOLD", c: "PINTURAS", m: "SIN MARCA", img: "https://acosa.com.sv/wp-content/uploads/2025/04/EA368.webp", t: "Vidri", precio: 1.15 },
+  { n: "TALADRO ROTATIVO INALAMBRICO 9.53 mm (3/8 in) 12 V 1.5 Ah", c: "HERRAMIENTAS", m: "SIN MARCA", img: "IMAGENES/TALADRO RONIX.jpg", t: "Vidri", precio: 94.9 },
+  { n: "SET HERRAMIENTAS MANUALES BASICAS", c: "HERRAMIENTAS", m: "SIN MARCA", img: "IMAGENES/SET HERRAMIENTAS.jpg", t: "Vidri", precio: 9.35 },
+  { n: "CINTA METRICA 5 M X 19MM X 16 PIE CON GRIP", c: "HERRAMIENTAS", m: "SIN MARCA", img: "https://crossmaster.com.ar/wp-content/uploads/9932016.jpg", t: "Vidri", precio: 5.95 },
+  { n: "ESMERIL ANGULAR 228.6 mm (9 in) 2 400 W", c: "HERRAMIENTAS", m: "SIN MARCA", img: "IMAGENES/ESMERIL ANGULAR BOSCH.jpg", t: "Vidri", precio: 142.0 },
+  { n: "CAJA PARA HERRAMIENTA METAL PLEGABLE 404 mm x 200 mm x 205 mm", c: "HERRAMIENTAS", m: "SIN MARCA", img: "IMAGENES/CAJA HERRAMIENTAS.jpg", t: "Vidri", precio: 16.95 },
+  { n: "SIERRA CIRCULAR INALAMBRICA 165.1 mm (6 1/2 in) 20 V", c: "HERRAMIENTAS", m: "SIN MARCA", img: "IMAGENES/SIERRA CIRCULAR RYOBI.jpg", t: "Vidri", precio: 77.95 },
+  { n: "MARTILLO OREJA 567 g (20 oz) MANGO DE MADERA", c: "HERRAMIENTAS", m: "SIN MARCA", img: "https://sv.epaenlinea.com/media/catalog/product/cache/3181417c431de679be540c26be86ee03/d/c/dc957306-f91e-4fc6-83ef-41e489bfdf2d.jpg", t: "Vidri", precio: 4.5 },
+  { n: "TENAZA AJUSTE RAPIDO 20.32 cm (8 in) EXTENSIBLE", c: "HERRAMIENTAS", m: "SIN MARCA", img: "https://www.tiendalincoln.com.py/static/products/DEFAULT/915055/SMALL/915055%20TENAZA%20AJUST.jpg", t: "Vidri", precio: 5.9 },
+  { n: "SOLDADOR INVERSOR ELECTRICO MULTIFUNCION MMA/MIG 130 A", c: "HERRAMIENTAS", m: "SIN MARCA", img: "IMAGENES/SOLDADOR ELITE.jpg", t: "Vidri", precio: 425.0 },
+  { n: "SET BROCA METAL", c: "HERRAMIENTAS", m: "SIN MARCA", img: "IMAGENES/SET DE BROCAS.jpg", t: "Vidri", precio: 39.95 },
+];
+
+// ── ESTADO ──
+var cot = [];
+var PLAN = "basico";
+var catActiva = "CONSTRUCCION";
+var tiendasActivas = { Freund: true, Vidri: true, EPA: true, Lemus: true };
+var contadorHoy = parseInt(localStorage.getItem("contadorHoy") || "0");
+var fechaHoy = localStorage.getItem("fechaHoy") || "";
+var hoy = new Date().toDateString();
+var paginaActual = 0;
+var ITEMS_POR_PAGINA = 30;
+var resultadoActual = [];
+
+if (fechaHoy !== hoy) {
+  contadorHoy = 0;
+  localStorage.setItem("fechaHoy", hoy);
+  localStorage.setItem("contadorHoy", "0");
+}
+
+var LIMITES = { basico: 10, pro: 30, empresarial: 999 };
+function limiteDiario() { return LIMITES[PLAN]; }
+function puedeCotizar() { return contadorHoy < limiteDiario(); }
+function registrarUso() {
+  contadorHoy++;
+  localStorage.setItem("contadorHoy", contadorHoy.toString());
+  localStorage.setItem("fechaHoy", hoy);
+  actualizarAviso();
+}
+function actualizarAviso() {
+  var av = document.getElementById("aviso-limite");
+  var restantes = limiteDiario() - contadorHoy;
+  if (restantes <= 3 && restantes > 0) {
+    av.style.display = "block";
+    av.innerHTML = "Aviso: Te quedan " + restantes + " consulta(s) hoy en el Plan Basico.";
+  } else if (restantes <= 0) {
+    av.style.display = "block";
+    av.innerHTML = "Alcanzaste el limite diario del Plan Basico. Actualiza tu plan para continuar.";
+  } else {
+    av.style.display = "none";
+  }
+}
+
+// ── LIMPIAR BUSCADOR ──
+function limpiarBuscador() {
+  document.getElementById("buscador").value = "";
+  document.getElementById("btn-limpiar").style.display = "none";
+  filtrar();
+}
+
+// ── DEBOUNCE DEL BUSCADOR ──
+// Espera a que la persona deje de escribir (250ms de pausa) antes de
+// filtrar y volver a pintar la lista. Sin esto, cada letra escrita
+// dispara un render completo, lo cual se siente lento con miles de
+// productos.
+var timerBuscador = null;
+function onBuscadorInput() {
+  clearTimeout(timerBuscador);
+  timerBuscador = setTimeout(filtrar, 250);
+}
+
+// ── FILTRO POR CATEGORÍA ──
+function setCat(cat) {
+  catActiva = cat;
+  document.querySelectorAll(".filtro-btn").forEach(function(btn) {
+    btn.classList.remove("activo");
+  });
+  event.target.classList.add("activo");
+  paginaActual = 0;
+  filtrar();
+}
+
+// ── FILTRO POR TIENDA ──
+function toggleTienda(t) {
+  // No se permite dejar las dos tiendas apagadas: si ya solo queda
+  // una activa, no se puede apagar tambien esa.
+  var activasAhora = Object.keys(tiendasActivas).filter(function(k) { return tiendasActivas[k]; });
+  if (tiendasActivas[t] && activasAhora.length <= 1) {
+    return;
+  }
+  tiendasActivas[t] = !tiendasActivas[t];
+  var btn = document.querySelector(".tienda-filtro-" + t);
+  if (btn) btn.classList.toggle("activo", tiendasActivas[t]);
+  paginaActual = 0;
+  filtrar();
+}
+
+// ── BÚSQUEDA + FILTRO ──
+// ── QUITAR ACENTOS ──
+// Sin esto, buscar "lamina" no encontraba "Lámina" porque la
+// comparacion es letra por letra y "a" no es igual a "á".
+function quitarAcentos(s) {
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+function nombreSinAcentos(p) {
+  // Memoizado: se calcula una sola vez por producto, no en cada busqueda.
+  if (!p._nn) p._nn = quitarAcentos(p.n.toLowerCase());
+  return p._nn;
+}
+
+function filtrar() {
+  var v = quitarAcentos(document.getElementById("buscador").value.toLowerCase().trim());
+  var btnLimpiar = document.getElementById("btn-limpiar");
+  btnLimpiar.style.display = v.length > 0 ? "block" : "none";
+
+  // Mientras haya texto en el buscador, ninguna pestaña de categoria
+  // se muestra "activa" -- porque la busqueda ignora la categoria y
+  // mostrar una pestaña resaltada da la impresion equivocada de que
+  // los resultados estan limitados a esa categoria.
+  document.querySelectorAll(".filtro-btn").forEach(function(btn) {
+    btn.classList.toggle("activo", v.length === 0 && btn.textContent.trim().toUpperCase() === catActiva.toUpperCase());
+  });
+  var nota = document.getElementById("nota-buscar");
+  nota.textContent = v.length > 0
+    ? "Buscando en todas las categorias"
+    : "Escribe el nombre del producto que buscas";
+
+  var resultado = P.filter(function(p) {
+    var coincideTexto = v.length === 0 || nombreSinAcentos(p).indexOf(v) >= 0;
+    // Si hay texto escrito, busca en TODO el catalogo sin importar
+    // la categoria activa. El filtro de categoria solo aplica cuando
+    // el buscador esta vacio.
+    var coincideCat = v.length > 0 || catActiva === "TODAS" || p.c.toUpperCase() === catActiva.toUpperCase();
+    var coincideTienda = tiendasActivas[p.t] !== false;
+    return coincideTexto && coincideCat && coincideTienda;
+  });
+
+  resultado = ordenarPorRelevancia(resultado, v);
+
+  resultadoActual = resultado;
+  paginaActual = 0;
+  render(resultado);
+}
+
+// ── ORDENAR RESULTADOS DE BUSQUEDA POR RELEVANCIA ──
+// Sin esto, "tornillo" mostraba primero productos que solo mencionan
+// la palabra de paso (ej. "CUBO MAGNETICO TORNILLO BROCA") en vez del
+// producto "tornillo" en si. Con esto, manda primero lo que EMPIEZA
+// con la busqueda, luego lo que la tiene como palabra completa, y al
+// final el resto (coincidencia parcial, como antes).
+function ordenarPorRelevancia(lista, v) {
+  if (!v) return lista;
+  function puntaje(prod) {
+    var n = nombreSinAcentos(prod);
+    if (n.indexOf(v) === 0) return 0; // empieza con la busqueda
+    var comoPalabra = new RegExp("(^|[^a-z0-9])" + v.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "([^a-z0-9]|$)");
+    if (comoPalabra.test(n)) return 1; // aparece como palabra completa
+    return 2; // solo coincidencia parcial dentro de otra palabra
+  }
+  return lista.slice().sort(function(a, b) {
+    return puntaje(a) - puntaje(b);
+  });
+}
+
+// ── HELPERS ──
+function min(p) {
+  var vals = Object.values(p).filter(function(v) { return v > 0; });
+  return vals.length > 0 ? Math.min.apply(null, vals) : 0;
+}
+function mejor(p) {
+  var m = min(p);
+  return m > 0 ? Object.keys(p).find(function(k) { return p[k] === m; }) : "N/A";
+}
+function cantidadProd(idx) {
+  var inp = document.getElementById("cant_" + idx);
+  return inp ? parseInt(inp.value) || 1 : 1;
+}
+function cambiarCant(idx, delta) {
+  var inp = document.getElementById("cant_" + idx);
+  if (inp) { inp.value = Math.max(1, (parseInt(inp.value) || 1) + delta); }
+}
+
+// ── RENDER DE TARJETAS CON PAGINACIÓN ──
+function render(lista) {
+  var hayBusqueda = document.getElementById("buscador").value.trim().length > 0;
+  var inicio = 0;
+  // Con busqueda activa: se muestran hasta 150 resultados de una vez
+  // (siguen siendo manejables para el navegador). Si hay mas de 150
+  // coincidencias (termino muy generico como "tubo"), el resto queda
+  // disponible con el boton "Ver mas" en vez de pintar todo junto.
+  var LIMITE_BUSQUEDA = 150;
+  var fin = hayBusqueda
+    ? Math.min(lista.length, (paginaActual + 1) * LIMITE_BUSQUEDA)
+    : (paginaActual + 1) * ITEMS_POR_PAGINA;
+  var pagina = lista.slice(inicio, fin);
+  var h = "";
+
+  if (lista.length === 0) {
+    h = "<div class=\"info-buscar\">No se encontraron productos</div>";
+    document.getElementById("lista-productos").innerHTML = h;
+    return;
+  }
+
+  pagina.forEach(function(prod) {
+    var idx = P.indexOf(prod);
+    var enCot = cot.find(function(c) { return c.n === prod.n && c.tienda === prod.t; });
+    var cat = prod.c || "GENERAL";
+    h += "<div class=\"card\">";
+    if (prod.img) {
+      h += "<img class=\"prod-imagen\" src=\"" + prod.img + "\" alt=\"\" loading=\"lazy\" onerror=\"this.style.display=\'none\'\" onclick=\"abrirImagen(\'" + prod.img + "\', event)\">";
+    }
+    h += "<span class=\"cat-badge cat-" + cat + "\">" + cat + "</span>";
+    h += "<span class=\"tienda-badge tienda-" + prod.t + "\"><span class=\"tienda-icono\">" + prod.t.charAt(0) + "</span>" + prod.t + "</span>";
+    h += "<div class=\"prod-nombre\">" + prod.n + (prod.m ? " <span class=\"marca-badge\">" + prod.m + "</span>" : "") + "</div>";
+    h += "<div class=\"precios\">";
+    h += "<div class=\"pbox\">";
+    if (prod.precio > 0) {
+      h += "<div class=\"valor\">$" + prod.precio.toFixed(2) + "</div>";
+    } else {
+      h += "<div class=\"nodisponible\">Verificar en tienda</div>";
+    }
+    h += "</div>";
+    h += "</div>";
+    h += "<div class=\"cantidad-box\">";
+    h += "<span style='font-size:13px;color:#666'>Cantidad:</span>";
+    h += "<button onclick=\"cambiarCant(" + idx + ",-1)\">-</button>";
+    h += "<input type='number' id='cant_" + idx + "' value='1' min='1' style='width:50px;text-align:center;padding:5px;border:1px solid #ddd;border-radius:8px;font-size:16px'>";
+    h += "<button onclick=\"cambiarCant(" + idx + ",1)\">+</button>";
+    h += "</div>";
+    if (enCot) {
+      h += "<button class=\"btn-naranja\" style=\"background:#888\" disabled>Ya en cotizacion</button>";
+    } else if (!puedeCotizar()) {
+      h += "<button class=\"btn-naranja\" style=\"background:#ccc\" disabled>Limite diario alcanzado</button>";
+    } else {
+      h += "<button class=\"btn-naranja\" onclick=\"agregar(" + idx + ")\">+ Agregar a cotizacion</button>";
+    }
+    h += "</div>";
+  });
+
+  // Botón "Ver más"
+  if (fin < lista.length) {
+    var restantes = lista.length - fin;
+    var incremento = hayBusqueda ? LIMITE_BUSQUEDA : ITEMS_POR_PAGINA;
+    h += "<button class=\"ver-mas-btn no-print\" onclick=\"verMas()\">Ver " + Math.min(restantes, incremento) + " productos mas (" + restantes + " restantes)</button>";
+  }
+
+  document.getElementById("lista-productos").innerHTML = h;
+}
+
+function verMas() {
+  paginaActual++;
+  render(resultadoActual);
+  // Scroll suave al nuevo contenido
+  setTimeout(function() {
+    var btn = document.querySelector(".ver-mas-btn");
+    if (btn) btn.scrollIntoView({ behavior: "smooth" });
+  }, 100);
+}
+
+// ── COTIZACIÓN ──
+function agregar(idx) {
+  var pr = P[idx];
+  if (cot.find(function(c) { return c.n === pr.n && c.tienda === pr.t; })) return;
+  if (!puedeCotizar()) { alert("Alcanzaste el limite diario. Actualiza tu plan."); return; }
+  var cant = cantidadProd(idx);
+  cot.push({ n: pr.n, precio: pr.precio, tienda: pr.t, cantidad: cant, subtotal: pr.precio * cant });
+  registrarUso();
+  renderCot();
+  filtrar();
+}
+
+function eliminar(i) { cot.splice(i, 1); renderCot(); filtrar(); }
+
+function cambiarCantCot(i, delta) {
+  var item = cot[i];
+  item.cantidad = Math.max(1, item.cantidad + delta);
+  item.subtotal = item.precio * item.cantidad;
+  renderCot();
+}
+
+function limpiarCotizacion() {
+  if (confirm("Borrar toda la cotizacion?")) {
+    cot = [];
+    renderCot();
+    filtrar();
+  }
+}
+
+function renderCot() {
+  if (cot.length === 0) {
+    document.getElementById("seccion-cotizacion").style.display = "none";
+    return;
+  }
+  document.getElementById("seccion-cotizacion").style.display = "block";
+  var h = "";
+  var totalMateriales = 0;
+  cot.forEach(function(item, i) {
+    totalMateriales += item.subtotal;
+    h += "<div class=\"cot-item\">";
+    h += "<div class=\"cot-nombre\">" + item.n + "</div>";
+    h += "<div class=\"cot-tienda\" style=\"text-align:center\">" + item.tienda + "</div>";
+    h += "<div class=\"cot-precio\">$" + item.precio.toFixed(2) + "</div>";
+    h += "<div style='display:flex;align-items:center;justify-content:center;gap:4px'>";
+    h += "<button onclick=\"cambiarCantCot(" + i + ",-1)\" style='background:#FF6B00;color:white;border:none;width:22px;height:22px;border-radius:50%;cursor:pointer'>-</button>";
+    h += "<span style='font-weight:bold'>" + item.cantidad + "</span>";
+    h += "<button onclick=\"cambiarCantCot(" + i + ",1)\" style='background:#FF6B00;color:white;border:none;width:22px;height:22px;border-radius:50%;cursor:pointer'>+</button>";
+    h += "</div>";
+    h += "<div class=\"cot-subtotal\">$" + item.subtotal.toFixed(2) + "</div>";
+    h += "<button class=\"cot-eliminar\" onclick=\"eliminar(" + i + ")\">x</button>";
+    h += "</div>";
+  });
+  document.getElementById("items-cotizacion").innerHTML = h;
+
+  // Total materiales
+  document.getElementById("total-materiales").innerHTML = "Total materiales: $" + totalMateriales.toFixed(2);
+
+  // Mano de obra y gran total
+  var manoObra = parseFloat(document.getElementById("inp-mano-obra").value) || 0;
+  var granTotalDiv = document.getElementById("gran-total");
+  if (manoObra > 0) {
+    granTotalDiv.style.display = "block";
+    granTotalDiv.innerHTML = "Mano de obra: $" + manoObra.toFixed(2) + "<br>GRAN TOTAL: $" + (totalMateriales + manoObra).toFixed(2);
+  } else {
+    granTotalDiv.style.display = "none";
+  }
+
+  // Nota tiempo de entrega
+  var entrega = document.getElementById("inp-entrega").value.trim();
+  var notaEntrega = document.getElementById("nota-entrega-cot");
+  if (entrega) {
+    notaEntrega.style.display = "block";
+    notaEntrega.innerHTML = "⏱ Tiempo de entrega estimado: " + entrega;
+  } else {
+    notaEntrega.style.display = "none";
+  }
+}
+
+// ── VISTA PREVIA ──
+function vistaPrevia() {
+  var u = document.getElementById("inp-usuario").value || "";
+  var c = document.getElementById("inp-cliente").value || "";
+  var o = document.getElementById("inp-obra").value || "";
+  var manoObra = parseFloat(document.getElementById("inp-mano-obra").value) || 0;
+  var entrega = document.getElementById("inp-entrega").value.trim();
+  var fecha = new Date().toLocaleDateString("es-SV");
+  var totalMateriales = 0;
+
+  var h = "<div class=\"preview-empresa\">";
+  if (u) h += "<strong>" + u + "</strong><br>";
+  if (c) h += "Cliente: " + c + "<br>";
+  if (o) h += "Obra: " + o + "<br>";
+  h += "Fecha: " + fecha;
+  h += "</div>";
+
+  h += "<table class=\"preview-tabla\">";
+  h += "<tr><th>Producto</th><th>Tienda</th><th>P.Unit</th><th>Cant</th><th>Subtotal</th></tr>";
+  cot.forEach(function(item) {
+    totalMateriales += item.subtotal;
+    h += "<tr>";
+    h += "<td>" + item.n + "</td>";
+    h += "<td>" + item.tienda + "</td>";
+    h += "<td>$" + item.precio.toFixed(2) + "</td>";
+    h += "<td>" + item.cantidad + "</td>";
+    h += "<td>$" + item.subtotal.toFixed(2) + "</td>";
+    h += "</tr>";
+  });
+  h += "</table>";
+
+  h += "<div class=\"preview-totales\">";
+  h += "Total materiales: $" + totalMateriales.toFixed(2) + "<br>";
+  if (manoObra > 0) {
+    h += "Mano de obra: $" + manoObra.toFixed(2) + "<br>";
+    h += "<div class=\"preview-gran-total\">GRAN TOTAL: $" + (totalMateriales + manoObra).toFixed(2) + "</div>";
+  }
+  h += "</div>";
+
+  if (entrega) {
+    h += "<div class=\"preview-nota\">⏱ Tiempo de entrega estimado: " + entrega + "</div>";
+  }
+
+  h += "<div class=\"preview-nota\" style=\"margin-top:6px;font-size:10px;color:#bbb\">Precios consultados en sucursal Merliot · Compra Inteligente</div>";
+
+  document.getElementById("contenido-preview").innerHTML = h;
+  document.getElementById("modal-preview").style.display = "block";
+}
+
+function cerrarPreview() {
+  document.getElementById("modal-preview").style.display = "none";
+}
+
+function abrirImagen(url, event) {
+  if (event) event.stopPropagation();
+  document.getElementById("img-ampliada").src = url;
+  document.getElementById("modal-imagen").style.display = "block";
+}
+function cerrarImagen() {
+  document.getElementById("modal-imagen").style.display = "none";
+}
+
+function imprimirCotizacion() {
+  cerrarPreview();
+  window.print();
+}
+
+// ── GUARDAR / CARGAR COTIZACIONES ──
+function guardarCotizacion() {
+  var nombre = document.getElementById("inp-nombre-cot").value.trim();
+  if (!nombre) { alert("Escribe un nombre para guardar la cotizacion."); return; }
+  var guardadas = JSON.parse(localStorage.getItem("cotizaciones") || "[]");
+  var manoObra = parseFloat(document.getElementById("inp-mano-obra").value) || 0;
+  var entrega = document.getElementById("inp-entrega").value.trim();
+  var totalMat = cot.reduce(function(s, i) { return s + i.subtotal; }, 0);
+  var nueva = {
+    nombre: nombre,
+    fecha: new Date().toLocaleDateString("es-SV"),
+    usuario: document.getElementById("inp-usuario").value,
+    cliente: document.getElementById("inp-cliente").value,
+    obra: document.getElementById("inp-obra").value,
+    manoObra: manoObra,
+    entrega: entrega,
+    items: cot,
+    total: totalMat + manoObra
+  };
+  guardadas.unshift(nueva);
+  if (guardadas.length > 10) guardadas = guardadas.slice(0, 10);
+  localStorage.setItem("cotizaciones", JSON.stringify(guardadas));
+  alert("Cotizacion guardada!");
+  mostrarGuardadas();
+}
+
+function mostrarGuardadas() {
+  var guardadas = JSON.parse(localStorage.getItem("cotizaciones") || "[]");
+  var sec = document.getElementById("seccion-guardadas");
+  if (guardadas.length === 0) { sec.style.display = "none"; return; }
+  sec.style.display = "block";
+  var h = "";
+  guardadas.forEach(function(c, i) {
+    h += "<div class=\"cot-guardada\">";
+    h += "<div><div class=\"cot-guardada-nombre\">" + c.nombre + "</div><div class=\"cot-guardada-fecha\">" + c.fecha + " - $" + c.total.toFixed(2) + "</div></div>";
+    h += "<div><button class=\"btn-cargar\" onclick=\"cargarCotizacion(" + i + ")\">Cargar</button><button class=\"btn-borrar-cot\" onclick=\"borrarCotizacion(" + i + ")\">Borrar</button></div>";
+    h += "</div>";
+  });
+  document.getElementById("lista-guardadas").innerHTML = h;
+}
+
+function cargarCotizacion(i) {
+  var guardadas = JSON.parse(localStorage.getItem("cotizaciones") || "[]");
+  var c = guardadas[i];
+  cot = c.items;
+  document.getElementById("inp-usuario").value = c.usuario || "";
+  document.getElementById("inp-cliente").value = c.cliente || "";
+  document.getElementById("inp-obra").value = c.obra || "";
+  document.getElementById("inp-nombre-cot").value = c.nombre || "";
+  document.getElementById("inp-mano-obra").value = c.manoObra || "";
+  document.getElementById("inp-entrega").value = c.entrega || "";
+  renderCot();
+  alert("Cotizacion cargada!");
+}
+
+function borrarCotizacion(i) {
+  if (!confirm("Borrar esta cotizacion?")) return;
+  var guardadas = JSON.parse(localStorage.getItem("cotizaciones") || "[]");
+  guardadas.splice(i, 1);
+  localStorage.setItem("cotizaciones", JSON.stringify(guardadas));
+  mostrarGuardadas();
+}
+
+// ── WHATSAPP ──
+function enviarWhatsApp() {
+  var u = document.getElementById("inp-usuario").value || "Sin nombre";
+  var c = document.getElementById("inp-cliente").value || "Sin cliente";
+  var o = document.getElementById("inp-obra").value || "Sin obra";
+  var manoObra = parseFloat(document.getElementById("inp-mano-obra").value) || 0;
+  var entrega = document.getElementById("inp-entrega").value.trim();
+  var totalMat = 0;
+  var txt = "Compra Inteligente\nNombre: " + u + "\nObra: " + o + "\nCliente: " + c + "\nFecha: " + new Date().toLocaleDateString("es-SV") + "\n\n_Cotizacion de referencia - para uso interno_\n\n*DETALLE*\n";
+  cot.forEach(function(item) {
+    totalMat += item.subtotal;
+    txt += item.n + " (" + item.tienda + ")\nCantidad: " + item.cantidad + " x $" + item.precio.toFixed(2) + " = $" + item.subtotal.toFixed(2) + "\n\n";
+  });
+  txt += "Total materiales: $" + totalMat.toFixed(2);
+  if (manoObra > 0) {
+    txt += "\nMano de obra: $" + manoObra.toFixed(2);
+    txt += "\nGRAN TOTAL: $" + (totalMat + manoObra).toFixed(2);
+  }
+  if (entrega) txt += "\n\nTiempo de entrega estimado: " + entrega;
+  txt += "\n_Compra Inteligente_";
+  window.open("https://wa.me/?text=" + encodeURIComponent(txt));
+}
+
+// ── ENVIAR AL COTIZADOR ──
+// Cambia esta direccion por la de tu cotizador publicado.
+var COTIZADOR_URL = "https://TU-USUARIO.github.io/Cotizador/cotizador.html";
+
+function enviarAlCotizador() {
+  if (COTIZADOR_URL.indexOf("TU-USUARIO") !== -1) {
+    mostrarToast("Falta configurar la direccion del cotizador");
+    return;
+  }
+  var items = cot.map(function(i) {
+    return { d: i.n, c: i.cantidad, p: i.precio, t: i.tienda };
+  });
+  var manoObra = parseFloat(document.getElementById("inp-mano-obra").value) || 0;
+  if (manoObra > 0) {
+    items.push({ d: "Mano de obra", u: "servicio", c: 1, p: manoObra, tipo: "mano" });
+  }
+  var datos = {
+    v: 1,
+    items: items,
+    cliente: { nombre: document.getElementById("inp-cliente").value || "", obra: document.getElementById("inp-obra").value || "" }
+  };
+  var bytes = new TextEncoder().encode(JSON.stringify(datos));
+  var bin = "";
+  bytes.forEach(function(b) { bin += String.fromCharCode(b); });
+  var b64 = btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  window.open(COTIZADOR_URL + "#import=" + b64, "_blank");
+}
+
+// ── PLANES ──
+function interesadoPlan(plan) {
+  mostrarToast("Muy pronto disponible, gracias por tu interes");
+}
+
+function mostrarToast(mensaje) {
+  var existente = document.getElementById("toast-aviso");
+  if (existente) existente.remove();
+  var toast = document.createElement("div");
+  toast.id = "toast-aviso";
+  toast.className = "toast-aviso";
+  toast.textContent = mensaje;
+  document.body.appendChild(toast);
+  setTimeout(function () { toast.classList.add("visible"); }, 10);
+  setTimeout(function () {
+    toast.classList.remove("visible");
+    setTimeout(function () { toast.remove(); }, 300);
+  }, 3000);
+}
+
+// ── INICIO ──
+actualizarAviso();
+mostrarGuardadas();
+filtrar();
+</script>
+<button class="btn-subir no-print" id="btn-subir" onclick="window.scrollTo({top:0, behavior:'smooth'})">&#8593;</button>
+<script>
+  // Boton flotante "subir arriba": aparece solo despues de bajar un
+  // poco, para no estorbar cuando la persona apenas abre la pagina.
+  window.addEventListener("scroll", function () {
+    var btn = document.getElementById("btn-subir");
+    btn.classList.toggle("visible", window.scrollY > 400);
+  });
+</script>
+</body>
+</html>
